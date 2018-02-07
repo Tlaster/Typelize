@@ -1,0 +1,259 @@
+class Welcome {
+    createdAt: String
+    id: Int
+    idstr: String
+    mid: String
+    canEdit: Bool
+    text: String
+    sourceAllowclick: Int
+    sourceType: Int
+    source: String
+    appid: Int
+    favorited: Bool
+    truncated: Bool
+    inReplyToStatusID: String
+    inReplyToUserID: String
+    inReplyToScreenName: String
+    picIDS: List<Any>
+    geo: Null
+    isPaid: Bool
+    mblogVipType: Int
+    user: User
+    pid: Int
+    retweetedStatus: RetweetedStatus
+    annotations: List<Annotation>
+    repostsCount: Int
+    commentsCount: Int
+    attitudesCount: Int
+    pendingApprovalCount: Int
+    isLongText: Bool
+    mlevel: Int
+    visible: Visible
+    bizFeature: Int
+    hasActionTypeCard: Int
+    textTagTips: List<Any>
+    rid: String
+    userType: Int
+    moreInfoType: Int
+    positiveRecomFlag: Int
+    contentAuth: Int
+    gifIDS: String
+    isShowBulletin: Int
+    commentManageInfo: CommentManageInfo
+    mblogtypename: String
+    mblogid: String
+    scheme: String
+    attitudesStatus: Int
+    recomState: Int
+    weiboPosition: Int
+    editConfig: EditConfig
+    mblogMenus: List<MblogMenu>
+}
+
+class Annotation {
+    clientMblogid?: String
+    mapiRequest?: Bool
+}
+
+class CommentManageInfo {
+    commentPermissionType: Int
+    approvalCommentType: Int
+}
+
+class EditConfig {
+    edited: Bool
+}
+
+class MblogMenu {
+    type: String
+    params?: Params
+    name?: String
+}
+
+class Params {
+    scheme: String
+}
+
+class RetweetedStatus {
+    createdAt: String
+    id: Int
+    idstr: String
+    mid: String
+    canEdit: Bool
+    text: String
+    textLength: Int
+    sourceAllowclick: Int
+    sourceType: Int
+    source: String
+    appid: Int
+    favorited: Bool
+    truncated: Bool
+    inReplyToStatusID: String
+    inReplyToUserID: String
+    inReplyToScreenName: String
+    picIDS: List<String>
+    thumbnailPic: String
+    bmiddlePic: String
+    originalPic: String
+    geo: Null
+    isPaid: Bool
+    mblogVipType: Int
+    user: User
+    annotations: List<Annotation>
+    repostsCount: Int
+    commentsCount: Int
+    attitudesCount: Int
+    pendingApprovalCount: Int
+    isLongText: Bool
+    mlevel: Int
+    visible: Visible
+    bizFeature: Int
+    hasActionTypeCard: Int
+    textTagTips: List<Any>
+    userType: Int
+    extendInfo: ExtendInfo
+    moreInfoType: Int
+    positiveRecomFlag: Int
+    contentAuth: Int
+    gifIDS: String
+    isShowBulletin: Int
+    commentManageInfo: CommentManageInfo
+    picInfos: Map<String, PicInfo>
+    mblogid: String
+    scheme: String
+    attitudesStatus: Int
+    recomState: Int
+    weiboPosition: Int
+    editConfig: EditConfig
+}
+
+class ExtendInfo {
+    weiboCamera: WeiboCamera
+}
+
+class WeiboCamera {
+    c: List<String>
+}
+
+class PicInfo {
+    thumbnail: Bmiddle
+    bmiddle: Bmiddle
+    large: Large
+    original: Large
+    largest: Large
+    objectID: String
+    picID: String
+    photoTag: Int
+    type: String
+    picStatus: Int
+}
+
+class Bmiddle {
+    url: String
+    width: Int
+    height: Int
+    cutType: Int
+    type: Null
+}
+
+class Large {
+    url: String
+    width: String
+    height: String
+    cutType: Int
+    type: Null
+}
+
+class User {
+    id: Int
+    idstr: String
+    class: Int
+    screenName: String
+    name: String
+    province: String
+    city: String
+    location: String
+    description: String
+    url: String
+    profileImageURL: String
+    coverImage?: String
+    coverImagePhone: String
+    profileURL: String
+    domain: String
+    weihao: String
+    gender: String
+    followersCount: Int
+    friendsCount: Int
+    pagefriendsCount: Int
+    statusesCount: Int
+    favouritesCount: Int
+    createdAt: String
+    following: Bool
+    allowAllActMsg: Bool
+    geoEnabled: Bool
+    verified: Bool
+    verifiedType: Int
+    remark: String
+    insecurity: Insecurity
+    ptype: Int
+    allowAllComment: Bool
+    avatarLarge: String
+    avatarHD: String
+    verifiedReason: String
+    verifiedTrade: String
+    verifiedReasonURL: String
+    verifiedSource: String
+    verifiedSourceURL: String
+    followMe: Bool
+    like: Bool
+    likeMe: Bool
+    onlineStatus: Int
+    biFollowersCount: Int
+    lang: String
+    star: Int
+    mbtype: Int
+    mbrank: Int
+    blockWord: Int
+    blockApp: Int
+    level: Int
+    type: Int
+    ulevel: Int
+    badge: Map<String, Int>
+    badgeTop: String
+    hasAbilityTag: Int
+    extend: Extend
+    unicomFreePC?: String
+    creditScore: Int
+    userAbility: Int
+    urank: Int
+    storyReadState: Int
+    vclubMember: Int
+    verifiedState?: Int
+    verifiedLevel?: Int
+    verifiedTypeEXT?: Int
+    hasServiceTel?: Bool
+    verifiedReasonModified?: String
+    verifiedContactName?: String
+    verifiedContactEmail?: String
+    verifiedContactMobile?: String
+    cardid?: String
+    storyID?: String
+}
+
+class Extend {
+    privacy: Privacy
+    mbprivilege: String
+}
+
+class Privacy {
+    mobile: Int
+}
+
+class Insecurity {
+    sexualContent: Bool
+}
+
+class Visible {
+    type: Int
+    listID: Int
+}
