@@ -24,15 +24,9 @@ namespace Typelize
             {
                 case null:
                     return "object";
-                case ListTypeInfo listTypeInfo:
-                    return
-                        $"List<{(listTypeInfo.ListType == TypeFlags.Custom ? listTypeInfo.CustomListTypeName : listTypeInfo.ListType.ToCSharp())}>";
-                case MapTypeInfo mapTypeInfo:
-                    return
-                        $"Dictionary<{(mapTypeInfo.KeyType == TypeFlags.Custom ? mapTypeInfo.CustomKeyTypeName : mapTypeInfo.KeyType.ToCSharp())}, {(mapTypeInfo.ValueType == TypeFlags.Custom ? mapTypeInfo.CustomValueTypeName : mapTypeInfo.ValueType.ToCSharp())}>";
                 default:
                     return
-                        $"{(typeInfo.Type == TypeFlags.Custom ? typeInfo.CustomTypeName : typeInfo.Type.ToCSharp())}";
+                        $"{(typeInfo.Type == TypeFlags.Custom ? typeInfo.CustomTypeName : typeInfo.Type.ToCSharp())}{(typeInfo.IsGenericType ? $"<{string.Join(", ", typeInfo.GenericTypeinfos.Select(item => item.ToString()))}>" : "")}";
             }
         }
 
@@ -52,7 +46,9 @@ namespace Typelize
                 case TypeFlags.Bool:
                     return "bool";
                 case TypeFlags.List:
+                    return "List";
                 case TypeFlags.Map:
+                    return "Dictionary";
                 case TypeFlags.Custom:
                 default:
                     throw new ArgumentOutOfRangeException(nameof(flags), flags, null);

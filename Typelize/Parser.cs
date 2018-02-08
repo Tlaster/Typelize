@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using Sprache;
 
 namespace Typelize
@@ -36,7 +37,7 @@ namespace Typelize
         {
         }
 
-        public TypeInfo(string type)
+        public TypeInfo(string type, IEnumerable<TypeInfo> genes = null)
         {
             if (Enum.TryParse<TypeFlags>(type, out var result))
             {
@@ -47,80 +48,48 @@ namespace Typelize
                 Type = TypeFlags.Custom;
                 CustomTypeName = type;
             }
+
+            GenericTypeinfos = genes?.ToArray();
         }
 
-        public virtual TypeFlags Type { get; }
+        public TypeInfo(JTokenType valueType)
+        {
+            switch (valueType)
+            {
+                case JTokenType.Integer:
+                    Type = TypeFlags.Int;
+                    break;
+                case JTokenType.Float:
+                    Type = TypeFlags.Double;
+                    break;
+                case JTokenType.String:
+                    Type = TypeFlags.String;
+                    break;
+                case JTokenType.Boolean:
+                    Type = TypeFlags.Bool;
+                    break;
+                case JTokenType.Undefined:
+                case JTokenType.Null:
+                    Type = TypeFlags.Null;
+                    break;
+                default:
+                    Type = TypeFlags.Custom;
+                    CustomTypeName = valueType.ToString();
+                    break;
+            }
+        }
+
+        public TypeFlags Type { get; }
         public string CustomTypeName { get; }
-
-        public override string ToString()
-        {
-            return Type != TypeFlags.Custom ? Type.ToString() : CustomTypeName;
-        }
-    }
-
-    public class ListTypeInfo : TypeInfo
-    {
-        public ListTypeInfo(string type)
-        {
-            if (Enum.TryParse<TypeFlags>(type, out var result))
-            {
-                ListType = result;
-            }
-            else
-            {
-                ListType = TypeFlags.Custom;
-                CustomListTypeName = type;
-            }
-        }
-
-        public override TypeFlags Type { get; } = TypeFlags.List;
-        public TypeFlags ListType { get; }
-        public string CustomListTypeName { get; }
-
-        public override string ToString()
-        {
-            return $"List<{(ListType == TypeFlags.Custom ? CustomListTypeName : ListType.ToString())}>";
-        }
-    }
-
-    public class MapTypeInfo : TypeInfo
-    {
-        public MapTypeInfo(string key, string value)
-        {
-            if (Enum.TryParse<TypeFlags>(key, out var keyType))
-            {
-                KeyType = keyType;
-            }
-            else
-            {
-                KeyType = TypeFlags.Custom;
-                CustomKeyTypeName = key;
-            }
-
-            if (Enum.TryParse<TypeFlags>(value, out var valueType))
-            {
-                ValueType = valueType;
-            }
-            else
-            {
-                ValueType = TypeFlags.Custom;
-                CustomValueTypeName = value;
-            }
-        }
-
-        public override TypeFlags Type { get; } = TypeFlags.Map;
-        public TypeFlags KeyType { get; }
-        public TypeFlags ValueType { get; }
-        public string CustomKeyTypeName { get; }
-        public string CustomValueTypeName { get; }
+        public bool IsGenericType => GenericTypeinfos != null && GenericTypeinfos.Any();
+        public TypeInfo[] GenericTypeinfos { get; }
 
         public override string ToString()
         {
             return
-                $"Map<{(KeyType == TypeFlags.Custom ? CustomKeyTypeName : KeyType.ToString())}, {(ValueType == TypeFlags.Custom ? CustomValueTypeName : ValueType.ToString())}>";
+                $"{(Type != TypeFlags.Custom ? Type.ToString() : CustomTypeName)}{(IsGenericType ? $"<{string.Join(", ", GenericTypeinfos.Select(item => item.ToString()))}>" : "")}";
         }
     }
-
 
     public class PropertyItem
     {
@@ -136,41 +105,29 @@ namespace Typelize
 
     public static class TypeParser
     {
-        private static readonly Parser<TypeInfo> MapParser =
-            from pref in Parse.String("Map")
-            from openBk in Parse.Char('<').Token()
-            from key in Parse.LetterOrDigit.Many().Text().Token()
-            from sp in Parse.Char(',').Token()
-            from value in Parse.LetterOrDigit.Many().Text().Token()
-            from closeBk in Parse.Char('>')
-            select new MapTypeInfo(key, value);
+        private static readonly Parser<TypeInfo> GenericParser =
+            from pref in Parse.LetterOrDigit.Many().Text().Token()
+            from genes in GenericTypeParser.Optional()
+            select new TypeInfo(pref, genes.GetOrDefault());
 
-        private static readonly Parser<TypeInfo> ListParser =
-            from pref in Parse.String("List")
+        private static readonly Parser<IEnumerable<TypeInfo>> GenericTypeParser =
             from openBk in Parse.Char('<').Token()
-            from type in Parse.LetterOrDigit.Many().Text().Token()
+            from genes in Parse.Ref(() =>
+                from type in GenericParser from spliter in Parse.Char(',').Optional().Token() select type).Many()
             from closeBk in Parse.Char('>').Token()
-            select new ListTypeInfo(type);
-
-        private static readonly Parser<TypeInfo> CommonTypeParser =
-            from typeSub in Parse.LetterOrDigit.Many().Text().Token()
-            select new TypeInfo(typeSub);
-
-        private static readonly Parser<TypeInfo> PropertyTypeParser =
-            MapParser.Or(ListParser).Or(CommonTypeParser);
+            select genes;
 
         private static readonly Parser<PropertyItem> PropertyParser =
             from propNameSub in Parse.LetterOrDigit.Many().Text().Token()
             from isNullable in Parse.Char('?').Optional().Token()
             from m in Parse.Char(':').Once().Token()
-            from type in PropertyTypeParser
+            from type in GenericParser
             select new PropertyItem
             {
                 Name = propNameSub,
                 TypeInfo = type,
                 Nullable = isNullable.IsDefined
             };
-
 
         private static readonly Parser<IEnumerable<PropertyItem>> Menbers =
             PropertyParser.Many();
